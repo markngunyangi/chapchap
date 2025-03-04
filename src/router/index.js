@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../modules/homeview/HomeView.vue';
 import Stores from '../modules/storedetails/StoreDetails.vue';
-import NotFoundView from '@/views/NotFoundView.vue';
+import NotFoundView from '../modules/exception/NotFound.vue';
 import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
 import AddJobView from '@/views/AddJobView.vue';
 import EditJobView from '@/views/EditJobView.vue';
