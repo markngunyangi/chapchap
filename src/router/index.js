@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
-import JobsView from '@/views/JobsView.vue';
+import HomeView from '../modules/homeview/HomeView.vue';
+import Stores from '../modules/storedetails/StoreDetails.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
-import JobView from '@/views/JobView.vue';
+import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
 import AddJobView from '@/views/AddJobView.vue';
 import EditJobView from '@/views/EditJobView.vue';
 
@@ -15,25 +15,21 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/jobs',
-      name: 'jobs',
-      component: JobsView,
+      path: '/stores',
+      name: 'stores',
+      component: Stores,
     },
-    {
-      path: '/jobs/:id',
-      name: 'job',
-      component: JobView,
+    { 
+      path: '/restaurants', 
+      name:'restaurants', 
+      component: RestaurantsPage 
     },
-    {
-      path: '/jobs/add',
-      name: 'add-job',
-      component: AddJobView,
-    },
-    {
-      path: '/jobs/edit/:id',
-      name: 'edit-job',
-      component: EditJobView,
-    },
+    // { 
+    //   path: '/service-request',
+    //   name:'service-request', 
+    //   component: ServiceRequestPage 
+    // },
+
     {
       path: '/:catchAll(.*)',
       name: 'not-found',
