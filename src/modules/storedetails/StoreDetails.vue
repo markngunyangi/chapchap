@@ -1,29 +1,44 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Navbar from '../navbar/Navbar.vue';
 import { useRouter } from 'vue-router';
+import  usestoreService  from './storeDetailsService';
+import type { StoreList } from './storeDetailsTypes';
 
 const router = useRouter();
+const categories = ref<string[]>(['Electronics', 'Cosmetics', 'Perfume', 'Jewelry', 'Fashion', 'Pharmacy']);
+const activeCategory = ref<string>('Electronics');
 
-const categories = ref(['Electronics', 'Cosmetics', 'Perfume', 'Jewelry', 'Fashion', 'Pharmacy']);
-const activeCategory = ref('Electronics');
+const { fetchStores } = usestoreService();
+const {
+  data: storeData,
+  isSuccess: storeDataIsSuccess,
+  isPending: storeDataIsPending,
+  mutate: fetchStoreMutate
+} = fetchStores();
 
-const generateStores = (category: string, count: number) => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `${category}-${i + 1}`,
-    name: `${category} Store ${i + 1}`,
-    category,
-    location: `BBS Mall, Nairobi Store ${i + 1}`,
-    image: 'https://via.placeholder.com/100',
-    description: `Top ${category.toLowerCase()} store at BBS Mall`,
-  }));
-};
+const storeList = ref<StoreList>([]);
 
-// Ensure each category has at least 5 stores
-const stores = ref(categories.value.flatMap(category => generateStores(category, 5)));
+onMounted(() => {
+  getStores();
+});
+
+function getStores() {
+  fetchStoreMutate(undefined, {
+    onSuccess: (data) => {
+      if (data) {
+        console.log('Fetched Store Data:', data);
+        storeList.value = data; // Extract message
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching stores:', error);
+    }
+  });
+}
 
 const filteredStores = computed(() => {
-  return stores.value.filter(store => store.category === activeCategory.value);
+  return storeList.value.filter(store => store.product_categories?.name === activeCategory.value);
 });
 
 const goBack = () => {
@@ -52,12 +67,14 @@ const goBack = () => {
       </button>
     </div>
 
-    <div class="grid grid-cols-1 py-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+    <div v-if="storeDataIsPending" class="text-center py-6">Loading stores...</div>
+    <div v-else-if="!storeDataIsSuccess" class="text-center py-6 text-red-500">Failed to load stores</div>
+    <div v-else class="grid grid-cols-1 py-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
       <div v-for="store in filteredStores" :key="store.id" class="p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105">
-        <img :src="store.image" alt="Store Image" class="w-24 h-24 mx-auto mb-2">
+        <img src="https://via.placeholder.com/100" alt="Store Image" class="w-24 h-24 mx-auto mb-2">
         <h2 class="text-xl font-semibold">{{ store.name }}</h2>
-        <p class="text-gray-500 text-sm">{{ store.description }}</p>
-        <p class="text-sm text-gray-600">{{ store.location }}</p>
+        <p class="text-gray-500 text-sm">{{ store.address }}</p>
+        <p class="text-sm text-gray-600">{{ store.telephone }}</p>
         <button class="mt-3 bg-orange-500 text-white px-4 py-1 rounded-lg">View Store</button>
       </div>
     </div>
