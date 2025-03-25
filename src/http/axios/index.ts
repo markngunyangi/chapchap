@@ -1,5 +1,4 @@
 import axiosRequest from 'axios';
-
 import { BASE_API_URL } from '@/constants';
 
 export const axios = axiosRequest.create({
@@ -9,7 +8,8 @@ export const axios = axiosRequest.create({
   headers: {
     Accept: 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImVtYWlsIjoibWFyc2hhbGxtdXN5aW1pQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2xlIjoxLCJ0b2tlblZlcnNpb24iOm51bGwsImlhdMTEsImVtYWlsIjoibWFyc2hhbGxtdXN5aW1pQGdtYWlsLmNvbSIsInVzZXJuYW1lIjpudWxsLCJyb2xlIjoxLCJ0b2tlblZlcnNpb24iOm51bGwsImlhdCI6MTc0Mjc4OTQ0N30.nHjQbdAG9NAtRUfQS4ruBvnH2wC1utS8VlEtQtiL6IUCI6MTc0Mjc4OTQ0N30.nHjQbdAG9NAtRUfQS4ruBvnH2wC1utS8VlEtQtiL6IU`
   }
 });
 
