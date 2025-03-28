@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../modules/homeview/HomeView.vue';
 import Stores from '../modules/storedetails/StoreDetails.vue';
+import StoreDetails from '../modules/storedetails/ViewStore.vue';
+
 import NotFoundView from '../modules/exception/NotFound.vue';
 import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
 import AddJobView from '@/views/AddJobView.vue';
@@ -24,6 +26,8 @@ const router = createRouter({
       name:'restaurants', 
       component: RestaurantsPage 
     },
+    { path: '/store/:id', name: 'StoreDetails', component: StoreDetails, props: true },
+
     // { 
     //   path: '/service-request',
     //   name:'service-request', 

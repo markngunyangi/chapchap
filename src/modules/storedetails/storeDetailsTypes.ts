@@ -7,6 +7,7 @@ export type ProductCategory = {
   };
   
   export type Store = {
+    logoUrl: string;
     id: number;
     name: string;
     telephone: string;

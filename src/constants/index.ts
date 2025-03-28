@@ -19,7 +19,7 @@ export function getCurrentDomain(): string {
 
 export const VUE_BASE_PATH = process.env.VUE_BASE_PATH ?? '/';
 
-export const BASE_API_URL = process.env.BASE_API_URL ?? getCurrentDomain() + '/api/method'; 
+export const BASE_API_URL = process.env.BASE_API_URL ?? getCurrentDomain(); 
 
 export const SOCKET_IO_URL = process.env.SOCKET_IO_URL ?? getCurrentDomain() + ':9001'; 
 

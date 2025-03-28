@@ -1,8 +1,9 @@
 <template>
-  <nav class="bg-orange-500 p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50 shadow-lg">
-    <router-link to="/" class="text-white font-bold text-lg cursor-pointer">
-      Chap Chap E-Mall
+  <nav class="bg-orange-500 px-4 py-1 flex justify-between items-center fixed top-0 left-0 w-full z-50 shadow-lg">
+    <router-link to="/">
+      <img src="@/assets/logo.png" alt="Chap Chap E-Mall" class="h-20 w-full cursor-pointer" />
     </router-link>
+    
     <input type="text" placeholder="Search Products" class="p-2 text-sm rounded-xl w-1/3" />
     <div class="flex gap-4 text-white">
       <button @click="openModal('auth')">Sign up/Login</button>
