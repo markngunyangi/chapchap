@@ -11,3 +11,11 @@ export async function getproducts(): Promise<StoreList | undefined> {
       {}
     );
   }
+
+  export async function getFeaturedProducts(): Promise<StoreList | undefined> {
+    return await Http.get<StoreList>(
+      '/products/featured',
+      {},
+      {}
+    );
+  }

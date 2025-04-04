@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/vue-query';
 import { useNotification } from '@/composables';
 const { error, success } = useNotification();
 import {
-    getproducts
+    getproducts,getFeaturedProducts
 } from './HomeViewAPI';
 
 const useproductService = () => {
@@ -22,11 +22,23 @@ const useproductService = () => {
       }
     });
   }
-
+  function fetchFeaturedProducts() {
+    return useMutation({
+      mutationFn: getFeaturedProducts,
+      onSuccess: (data) => {
+        console.log('Fetched data:', data);
+        // storeDataStoreObj.setstoreData(data);
+      },
+      onError: (error) => {
+        console.error('Error fetching store data:', error);
+      }
+    });
+  }
  
 
   return {
-    fetchProducts
+    fetchProducts,
+    fetchFeaturedProducts
   };
 };
 

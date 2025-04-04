@@ -34,16 +34,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import image from '../../assets/sales.jpg'
 interface Slide {
   image: string;
   error?: boolean; // To track if an image failed to load
 }
 
 const slides = ref<Slide[]>([
-  { image: "https://invalid-url.com/image1.jpg" }, // Broken URL for testing
-  { image: "https://invalid-url.com/image2.jpg" },
-  { image: "https://via.placeholder.com/400x160/77ff7f" }
+  { image: image }, // Broken URL for testing
+  { image: image },
+  { image: image }
 ]);
 
 const currentIndex = ref<number>(0);

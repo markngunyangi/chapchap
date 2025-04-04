@@ -2,6 +2,7 @@ export type Product = {
     id: number;
     sub_category_id: number;
     store_id: number;
+    imageUrl:string
     name: string;
     gross_price: number;
     discount: number;
