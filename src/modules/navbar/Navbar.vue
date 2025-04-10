@@ -5,11 +5,29 @@
     </router-link>
     
     <input type="text" placeholder="Search Products" class="p-2 text-sm rounded-xl w-1/3" />
-    <div class="flex gap-4 text-white">
-      <button @click="openModal('auth')">Sign up/Login</button>
-      <button @click="openSidebar('wishlist')">Wish List</button>
-      <button @click="openSidebar('cart')">My Cart</button>
+    <div class="flex gap-6 items-center text-sm text-white">
+      <!-- Sign Up/Login Button -->
+      <button 
+        @click="openModal('auth')" 
+        class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
+        Sign up/Login
+      </button>
+    
+      <!-- Wishlist Button -->
+      <button 
+        @click="openSidebar('wishlist')" 
+        class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
+        Wish List ({{ wishlist.length }})
+      </button>
+    
+      <!-- Cart Button -->
+      <button 
+        @click="openSidebar('cart')" 
+        class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
+        My Cart
+      </button>
     </div>
+    
   </nav>
 
   <!-- Auth Modal (Centered) -->
@@ -48,7 +66,7 @@
         <div v-if="sidebarActive === 'wishlist'">
           <ul v-if="wishlist.length">
             <li v-for="item in wishlist" :key="item.id" class="flex items-center gap-4 border-b py-3">
-              <img :src="item.image" class="w-14 h-14 rounded-lg shadow-md" />
+              <img :src="'https://chapchap.marshsoft.org' + item.images[0].url " class="w-14 h-14 rounded-lg shadow-md" />
               <div class="flex-1">
                 <p class="font-semibold">{{ item.name }}</p>
                 <button class="text-blue-500 text-sm">Move to Cart</button>
@@ -86,6 +104,16 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 
+// Props passed down from parent
+defineProps<{
+  wishlist: {
+    id: number;
+    name: string;
+    image: string;
+  }[];
+  onToggleWishlist?: () => void;
+}>();
+
 const isModalOpen = ref(false);
 const isSidebarOpen = ref(false);
 const activeModal = ref<"auth" | null>(null);
@@ -94,19 +122,7 @@ const isLogin = ref(true);
 const email = ref("");
 const password = ref("");
 
-defineProps<{
-  wishlist: {
-    id: number;
-    name: string;
-    image: string;
-  }[];
-}>();
-
-const wishlist = ref([
-  { id: 1, name: "Smartwatch", image: "https://via.placeholder.com/50" },
-  { id: 2, name: "Wireless Earbuds", image: "https://via.placeholder.com/50" }
-]);
-
+// Local states for Cart
 const cart = ref([
   { id: 1, name: "Laptop", price: 1200, image: "https://via.placeholder.com/50" },
   { id: 2, name: "Headphones", price: 150, image: "https://via.placeholder.com/50" }
@@ -114,11 +130,13 @@ const cart = ref([
 
 const cartTotal = computed(() => cart.value.reduce((sum, item) => sum + item.price, 0));
 
+// Method to open modal
 const openModal = (modalType: "auth") => {
   activeModal.value = modalType;
   isModalOpen.value = true;
 };
 
+// Method to open sidebar
 const openSidebar = (type: "wishlist" | "cart") => {
   sidebarActive.value = type;
   isSidebarOpen.value = true;

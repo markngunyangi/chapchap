@@ -1,23 +1,30 @@
 <template>
   <div>
-    <Navbar  
-    :wishlist="wishlist"
-    @toggle-wishlist="openWishlistSidebar"/>
+    <Navbar :wishlist="wishlist" @toggle-wishlist="openWishlistSidebar" />
 
     <Banner />
     <CategoryTabs />
     <CategorySelector />
 
-    <div class="p-4">
+    <div class="p-6 md:p-10 space-y-16 bg-gray-50">
+
       <!-- Featured Products Section -->
-      <div class="flex items-start gap-4 mb-8">
+      <div class="flex items-start gap-6">
         <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-2">
-          <h2 class="text-xl font-bold">Featured Products</h2>
-          <img src="../../assets/best.jpg" alt="" class="w-full bg-white shadow rounded-xl text-center transition-transform transform" />
+        <div class="w-1/4 flex flex-col items-start gap-3">
+          <h2 class="text-2xl font-extrabold text-sky-700 flex items-center gap-2">
+            🌟 Featured Products
+          </h2>
+          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
+            <img
+              src="../../assets/best.jpg"
+              alt="Featured"
+              class="w-full object-cover transition-transform hover:scale-105 duration-300"
+            />
+          </div>
         </div>
 
-        <!-- 3/4: Products -->
+        <!-- 3/4: Product Cards -->
         <div class="w-3/4">
           <div v-if="featuredProducts.length === 0" class="text-center py-6 text-red-500">
             No featured products available.
@@ -27,7 +34,7 @@
               <div
                 v-for="product in featuredProducts.slice(0, 5)"
                 :key="product.id"
-                class="w-full p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
+                class="relative w-full p-4 bg-white shadow-lg rounded-xl"
               >
                 <ProductCard
                   :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://chapchap.marshsoft.org/uploads/shirt.jpeg'"
@@ -35,13 +42,15 @@
                   :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
                   buttonText="View Product"
                   @view="viewProduct(product)"
+                  @wishlist="addToWishlist(product)"
+
                 />
                 <button
-                @click="addToWishlist(product)"
-                class="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-              >
-                <i class="fas fa-heart"></i>
-              </button>
+                  @click="addToWishlist(product)"
+                  class="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:text-red-500 text-gray-500 transition-colors"
+                >
+                  <i class="fas fa-heart"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -49,14 +58,22 @@
       </div>
 
       <!-- Best Selling Section -->
-      <div class="flex items-start gap-4">
+      <div class="flex items-start gap-6">
         <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-2">
-          <h2 class="text-xl font-bold">Best Selling</h2>
-          <img src="../../assets/sales.jpg" alt="" class="w-full bg-white shadow rounded-xl text-center transition-transform transform" />
+        <div class="w-1/4 flex flex-col items-start gap-3">
+          <h2 class="text-2xl font-extrabold text-orange-600 flex items-center gap-2">
+            🔥 Best Selling
+          </h2>
+          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
+            <img
+              src="../../assets/sales.jpg"
+              alt="Best Selling"
+              class="w-full object-cover transition-transform hover:scale-105 duration-300"
+            />
+          </div>
         </div>
 
-        <!-- 3/4: Products -->
+        <!-- 3/4: Product Cards -->
         <div class="w-3/4">
           <div v-if="bestSellingProducts.length === 0" class="text-center py-6 text-red-500">
             No bestselling products available.
@@ -66,33 +83,26 @@
               <div
                 v-for="product in bestSellingProducts.slice(0, 5)"
                 :key="product.id"
-                class="w-full p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
+                class="relative w-full p-4 bg-white shadow-lg rounded-xl "
               >
-              <ProductCard
-              :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
-              :title="product.name"
-              :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-              buttonText="View Product"
-              @view="viewProduct(product)"
-              @wishlist="addToWishlist(product)"
-            />
-            
+                <ProductCard
+                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
+                  :title="product.name"
+                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
+                  buttonText="View Product"
+                  @view="viewProduct(product)"
+                  @wishlist="addToWishlist(product)"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Product Details Modal -->
-    <ProductDetails
-      v-if="selectedProduct"
-      :product="selectedProduct"
-      @checkout="handleCheckout"
-      @close="closeProductDetails"
-    />
+    </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
   import Navbar from '../navbar/Navbar.vue';
@@ -109,11 +119,7 @@
 
   const selectedProduct = ref<Product | null>(null);
   const router = useRouter();
-const wishlist = ref<any[]>([]); 
-  const addToWishlist = (product: any) => {
-  const exists = wishlist.value.find(p => p.id === product.id);
-  if (!exists) wishlist.value.push(product);
-};
+
   // View the selected product
   function viewProduct(product: Product) {
     // Navigate to the product details page
@@ -172,4 +178,10 @@ const wishlist = ref<any[]>([]);
   const bestSellingProducts = computed(() => {
     return storeList.value.sort((a, b) => b.quantity - a.quantity); // Example using quantity
   });
+  
+  const wishlist = ref<any[]>([]); 
+  const addToWishlist = (product: any) => {
+  const exists = wishlist.value.find(p => p.id === product.id);
+  if (!exists) wishlist.value.push(product);
+};
 </script>
