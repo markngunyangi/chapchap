@@ -17,9 +17,9 @@
           </h2>
           <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
             <img
-              src="../../assets/best.jpg"
+              src="../../assets/shirts.jpg"
               alt="Featured"
-              class="w-full object-cover transition-transform hover:scale-105 duration-300"
+              class="w-full object-contain transition-transform hover:scale-105 duration-300"
             />
           </div>
         </div>
@@ -66,9 +66,9 @@
           </h2>
           <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
             <img
-              src="../../assets/sales.jpg"
+              src="../../assets/couch.jpeg"
               alt="Best Selling"
-              class="w-full object-cover transition-transform hover:scale-105 duration-300"
+              class="w-full object-contain transition-transform hover:scale-105 duration-300"
             />
           </div>
         </div>

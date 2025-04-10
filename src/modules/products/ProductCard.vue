@@ -21,7 +21,7 @@
     <img
       :src="image"
       alt="Product"
-      class="w-full h-40 object-cover mb-4 rounded-lg bg-gray-50"
+      class="w-full h-40 object-contain mb-4 rounded-lg bg-gray-50"
     />
 
     <!-- Product Info -->

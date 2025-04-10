@@ -1,10 +1,19 @@
 <template>
   <nav class="bg-orange-500 px-4 py-1 flex justify-between items-center fixed top-0 left-0 w-full z-50 shadow-lg">
     <router-link to="/">
-      <img src="@/assets/logo.png" alt="Chap Chap E-Mall" class="h-20 w-full cursor-pointer" />
+      <img src="@/assets/Pasted.png" alt="Chap Chap E-Mall" class="h-24 w-full cursor-pointer" />
     </router-link>
     
-    <input type="text" placeholder="Search Products" class="p-2 text-sm rounded-xl w-1/3" />
+    <div class="relative w-1/3">
+      <input
+        type="text"
+        placeholder="Search Products"
+        class="p-2 text-sm  w-full pr-10"
+      />
+      <!-- Search Icon on the Right -->
+      <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    </div>
+    
     <div class="flex gap-6 items-center text-sm text-white">
       <!-- Sign Up/Login Button -->
       <button 
