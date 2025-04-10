@@ -4,11 +4,13 @@ import { useRouter, useRoute } from 'vue-router';
 import Navbar from '../navbar/Navbar.vue';
 import ProductCard from '../products/ProductCard.vue';
 import useProductService from '../products/productsService';
-import type { Product, ProductCategory } from '../products/productsTypes';
+import type { Product } from '../products/productsTypes';
 
 const router = useRouter();
 const route = useRoute();
-const activeCategory = ref<string>(''); // Initialize with an empty string
+const activeCategory = ref<string>('');
+const showInStockOnly = ref(false);
+const priceRange = ref<[number, number]>([0, 2000]);
 
 const { fetchProductforSpecificStore } = useProductService();
 const {
@@ -18,7 +20,6 @@ const {
   mutate: fetchProductMutate
 } = fetchProductforSpecificStore();
 
-// Ensure storeId is a number
 const storeId = computed(() => {
   const id = parseInt(route.params.id as string, 10);
   return isNaN(id) ? null : id;
@@ -27,26 +28,21 @@ const storeId = computed(() => {
 const categories = computed(() => {
   if (!storeData.value || !Array.isArray(storeData.value)) return [];
   const uniqueCategories = new Set<string>();
-
   storeData.value.forEach((product) => {
     if (product.product_categories?.name) {
       uniqueCategories.add(product.product_categories.name);
     }
   });
-
   return Array.from(uniqueCategories);
 });
 
 const storeList = ref<Product[]>([]);
 
-// Fetch products when storeId is available
 const fetchProducts = () => {
   if (storeId.value !== null) {
     fetchProductMutate(storeId.value, {
       onSuccess: (data) => {
-        console.log('Fetched Store Data:', data);
         storeList.value = data || [];
-        // Set initial active category if categories are available
         if (categories.value.length > 0 && activeCategory.value === '') {
           activeCategory.value = categories.value[0];
         }
@@ -59,22 +55,22 @@ const fetchProducts = () => {
 };
 
 onMounted(fetchProducts);
-
-// Re-fetch if the storeId changes (e.g., user navigates to a different store)
 watch(storeId, (newId) => {
-  if (newId !== null) {
-    fetchProducts();
-  }
+  if (newId !== null) fetchProducts();
 });
 
 const filteredStores = computed(() => {
-  if (!activeCategory.value) {
-    return storeList.value; // Show all if no category is selected
-  }
-  return storeList.value.filter(
-    (product) => product.product_categories?.name === activeCategory.value
-  );
+  return storeList.value.filter(product => {
+    const categoryMatch = !activeCategory.value || product.product_categories?.name === activeCategory.value;
+    const stockMatch = !showInStockOnly.value || product.quantity > 0;
+    const priceMatch = product.net_price >= priceRange.value[0] && product.net_price <= priceRange.value[1];
+    return categoryMatch && stockMatch && priceMatch;
+  });
 });
+
+function viewProduct(product: Product) {
+  router.push({ path: `/product/${product.id}` });
+}
 
 const goBack = () => {
   router.back();
@@ -91,43 +87,103 @@ const goBack = () => {
       <h1 class="text-xl font-bold text-center flex-1">List of Products</h1>
     </div>
 
-    <div class="flex gap-4 py-4 px-8 bg-gray-100 text-sm justify-between">
-      <button
-        v-for="category in categories"
-        :key="category"
-        @click="activeCategory = category"
-        :class="activeCategory === category ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
-      >
-        {{ category }}
-      </button>
-      <button
-        @click="activeCategory = ''"
-        :class="activeCategory === '' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'"
-      >
-        All
-      </button>
-    </div>
+    <div class="flex gap-6">
+      <!-- Filters -->
+      <aside class="w-72 bg-white shadow-lg rounded-xl p-6 text-sm space-y-8">
+        <div>
+          <h2 class="text-md font-semibold mb-2 text-orange-500">Availability</h2>
+          <label class="flex items-center justify-between bg-gray-100 p-2 rounded hover:bg-gray-200">
+            <span>In Stock</span>
+            <input
+              type="checkbox"
+              v-model="showInStockOnly"
+              class="form-checkbox text-orange-500 w-5 h-5 rounded focus:ring-orange-400"
+            />
+          </label>
+        </div>
 
-    <div v-if="storeDataIsPending" class="text-center py-6">Loading products...</div>
-    <div v-else-if="!storeDataIsSuccess" class="text-center py-6 text-red-500">Failed to load products</div>
+        <div>
+          <h2 class="text-md font-semibold mb-2 text-orange-500">Price</h2>
+          <div class="space-y-4">
+            <input type="range" min="0" max="2000" step="10" v-model="priceRange[0]" class="w-full" />
+            <input type="range" min="0" max="2000" step="10" v-model="priceRange[1]" class="w-full" />
+            <div class="flex justify-between text-sm text-gray-700 font-medium">
+              <span>${{ priceRange[0] }}</span>
+              <span>${{ priceRange[1] }}</span>
+            </div>
+          </div>
+        </div>
 
-    <div v-else class="grid grid-cols-1 py-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-      <div
-        v-for="product in filteredStores"
-        :key="product.id"
-        class="p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
-      >
-        <ProductCard
-          :image="product.images?.[0]?.url || 'https://via.placeholder.com/151'"
-          :title="product.name"
-          :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-          buttonText="View Product"
-        />
-      </div>
-      <div v-if="filteredStores.length === 0 && storeDataIsSuccess" class="text-center py-6 col-span-full text-gray-500">
-        No products found in the selected category.
+        <div>
+          <h2 class="text-md font-semibold mb-2 text-orange-500">Categories</h2>
+          <div class="space-y-2">
+            <button
+              v-for="category in categories"
+              :key="category"
+              @click="activeCategory = category"
+              :class="[
+                'block w-full text-left px-3 py-1 rounded hover:bg-orange-100',
+                activeCategory === category ? 'text-orange-600 font-semibold' : 'text-gray-700'
+              ]"
+            >
+              {{ category }}
+            </button>
+            <button
+              @click="activeCategory = ''"
+              :class="[
+                'block w-full text-left px-3 py-1 rounded hover:bg-orange-100',
+                activeCategory === '' ? 'text-orange-600 font-semibold' : 'text-gray-700'
+              ]"
+            >
+              All
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products -->
+      <div class="flex-1">
+        <div v-if="storeDataIsPending" class="text-center py-6">Loading products...</div>
+        <div v-else-if="!storeDataIsSuccess" class="text-center py-6 text-red-500">Failed to load products</div>
+
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div
+            v-for="product in filteredStores"
+            :key="product.id"
+            class="p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
+          >
+            <ProductCard
+              :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
+              :title="product.name"
+              :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
+              buttonText="View Product"
+              @view="viewProduct(product)"
+            />
+          </div>
+          <div v-if="filteredStores.length === 0 && storeDataIsSuccess" class="text-center py-6 col-span-full text-gray-500">
+            No products found in the selected category.
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+<style scoped>
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #f97316;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #f97316;
+}
+</style>

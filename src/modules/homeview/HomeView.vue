@@ -1,6 +1,9 @@
 <template>
   <div>
-    <Navbar />
+    <Navbar  
+    :wishlist="wishlist"
+    @toggle-wishlist="openWishlistSidebar"/>
+
     <Banner />
     <CategoryTabs />
     <CategorySelector />
@@ -33,6 +36,12 @@
                   buttonText="View Product"
                   @view="viewProduct(product)"
                 />
+                <button
+                @click="addToWishlist(product)"
+                class="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+              >
+                <i class="fas fa-heart"></i>
+              </button>
               </div>
             </div>
           </div>
@@ -59,13 +68,15 @@
                 :key="product.id"
                 class="w-full p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
               >
-                <ProductCard
-                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://chapchap.marshsoft.org/uploads/shirt.jpeg'"
-                  :title="product.name"
-                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-                  buttonText="View Product"
-                  @view="viewProduct(product)"
-                />
+              <ProductCard
+              :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
+              :title="product.name"
+              :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
+              buttonText="View Product"
+              @view="viewProduct(product)"
+              @wishlist="addToWishlist(product)"
+            />
+            
               </div>
             </div>
           </div>
@@ -98,7 +109,11 @@
 
   const selectedProduct = ref<Product | null>(null);
   const router = useRouter();
-
+const wishlist = ref<any[]>([]); 
+  const addToWishlist = (product: any) => {
+  const exists = wishlist.value.find(p => p.id === product.id);
+  if (!exists) wishlist.value.push(product);
+};
   // View the selected product
   function viewProduct(product: Product) {
     // Navigate to the product details page
@@ -117,6 +132,7 @@
   }
 
   const activeCategory = ref<string>(''); // Initialize with an empty string
+
 
   const { fetchProducts } = useProductService();
 

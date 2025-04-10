@@ -10,7 +10,7 @@
           <img
             :src="imageUrl"
             alt="Product Image"
-            class="rounded-xl w-full h-80 object-cover shadow-md"
+           class="w-full h-32 object-contain"
           />
         </div>
         <!-- Product Info -->
@@ -139,7 +139,7 @@ function checkout() {
 }
 
 function goBack() {
-  router.push({ name: 'home' });
+  router.back();
 }
 
 

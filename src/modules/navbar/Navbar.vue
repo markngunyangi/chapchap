@@ -94,6 +94,14 @@ const isLogin = ref(true);
 const email = ref("");
 const password = ref("");
 
+defineProps<{
+  wishlist: {
+    id: number;
+    name: string;
+    image: string;
+  }[];
+}>();
+
 const wishlist = ref([
   { id: 1, name: "Smartwatch", image: "https://via.placeholder.com/50" },
   { id: 2, name: "Wireless Earbuds", image: "https://via.placeholder.com/50" }

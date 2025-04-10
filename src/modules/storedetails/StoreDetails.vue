@@ -92,7 +92,7 @@ const goBack = () => {
         :key="store.id" 
         class="p-4 bg-white shadow rounded-xl text-center transition-transform transform hover:scale-105"
       >
-      <img :src="store.logoUrl || 'https://via.placeholder.com/100'" alt="Store Logo" class="w-24 h-24 mx-auto mb-2 rounded-full object-cover">
+      <img   :src="store.logoUrl ? 'https://chapchap.marshsoft.org' + store.logoUrl : 'https://via.placeholder.com/100'" />
         <h2 class="text-xl font-semibold">{{ store.name }}</h2>
         <p class="text-gray-500 text-sm">{{ store.address }}</p>
         <p class="text-sm text-gray-600">{{ store.telephone }}</p>
