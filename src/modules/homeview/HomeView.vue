@@ -1,187 +1,159 @@
 <template>
-  <div>
-    <Navbar :wishlist="wishlist" @toggle-wishlist="openWishlistSidebar" />
+  <nav class="bg-orange-500 px-4 py-1 flex justify-between items-center fixed top-0 left-0 w-full z-50 shadow-lg">
+    <router-link to="/">
+      <img src="@/assets/logo.png" alt="Chap Chap E-Mall" class="h-20 w-full cursor-pointer" />
+    </router-link>
+    
+    <input type="text" placeholder="Search Products" class="p-2 text-sm rounded-xl w-1/3" />
+    <div class="flex gap-4 text-white">
+      <button @click="openModal('auth')">Sign up/Login</button>
+      <button @click="openSidebar('wishlist')">Wish List</button>
+      <button @click="openSidebar('cart')">My Cart</button>
+    </div>
+  </nav>
 
-    <Banner />
-    <CategoryTabs />
-    <CategorySelector />
+  <!-- Auth Modal (Centered) -->
+  <div v-if="isModalOpen && activeModal === 'auth'" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4">{{ isLogin ? "Login" : "Sign Up" }}</h2>
+      <input type="email" v-model="email" placeholder="Email" class="w-full p-2 mb-2 border rounded-lg" />
+      <input type="password" v-model="password" placeholder="Password" class="w-full p-2 mb-4 border rounded-lg" />
+      <button class="w-full bg-orange-500 text-white p-2 rounded-lg">
+        {{ isLogin ? "Login" : "Sign Up" }}
+      </button>
+      <p class="mt-4 text-sm">
+        {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
+        <span class="text-blue-500 cursor-pointer" @click="isLogin = !isLogin">
+          {{ isLogin ? "Sign Up" : "Login" }}
+        </span>
+      </p>
+      <button @click="isModalOpen = false" class="mt-4 text-red-500">Close</button>
+    </div>
+  </div>
 
-    <div class="p-6 md:p-10 space-y-16 bg-gray-50">
+  <!-- Wishlist & Cart Sidebar -->
+  <div class="relative mt-16">
+    <div 
+      v-if="isSidebarOpen" 
+      class="fixed top-16 right-0 h-[85vh] w-1/4 bg-white shadow-lg rounded-l-2xl overflow-y-auto transition-transform duration-300 transform z-40"
+      :class="sidebarActive === 'wishlist' || sidebarActive === 'cart' ? 'translate-x-0' : 'translate-x-full'"
+    >
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-4 flex justify-between">
+          {{ sidebarActive === 'wishlist' ? 'Your Wishlist' : 'Shopping Cart' }}
+          <button @click="isSidebarOpen = false" class="text-gray-500 hover:text-red-500 text-lg">&times;</button>
+        </h2>
 
-      <!-- Featured Products Section -->
-      <div class="flex items-start gap-6">
-        <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-3">
-          <h2 class="text-2xl font-extrabold text-sky-700 flex items-center gap-2">
-            🌟 Featured Products
-          </h2>
-          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="../../assets/best.jpg"
-              alt="Featured"
-              class="w-full object-cover transition-transform hover:scale-105 duration-300"
-            />
-          </div>
+        <!-- Wishlist Content -->
+        <div v-if="sidebarActive === 'wishlist'">
+          <ul v-if="wishlist.length">
+            <li v-for="item in wishlist" :key="item.id" class="flex items-center gap-4 border-b py-3">
+              <img :src="'https://chapchap.marshsoft.org' + item.images[0].url " class="w-14 h-14 rounded-lg shadow-md" />
+              <div class="flex-1">
+                <p class="font-semibold">{{ item.name }}</p>
+                <button class="text-blue-500 text-sm" @click="moveToCart(item)">Move to Cart</button>
+              </div>
+              <button class="text-red-500 hover:text-red-700 text-xl" @click="removeFromWishlist(item)">×</button>
+            </li>
+          </ul>
+          <p v-else class="text-gray-500 text-center py-4">Your wishlist is empty.</p>
         </div>
 
-        <!-- 3/4: Product Cards -->
-        <div class="w-3/4">
-          <div v-if="featuredProducts.length === 0" class="text-center py-6 text-red-500">
-            No featured products available.
-          </div>
-          <div v-else class="overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <div class="flex gap-6">
-              <div
-                v-for="product in featuredProducts.slice(0, 5)"
-                :key="product.id"
-                class="relative w-full p-4 bg-white shadow-lg rounded-xl"
-              >
-                <ProductCard
-                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://chapchap.marshsoft.org/uploads/shirt.jpeg'"
-                  :title="product.name"
-                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-                  buttonText="View Product"
-                  @view="viewProduct(product)"
-                  @wishlist="addToWishlist(product)"
-
-                />
-                <button
-                  @click="addToWishlist(product)"
-                  class="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:text-red-500 text-gray-500 transition-colors"
-                >
-                  <i class="fas fa-heart"></i>
-                </button>
+        <!-- Cart Content -->
+        <div v-if="sidebarActive === 'cart'">
+          <ul v-if="cart.length">
+            <li v-for="item in cart" :key="item.id" class="flex items-center gap-4 border-b py-3">
+              <img :src="item.image" class="w-14 h-14 rounded-lg shadow-md" />
+              <div class="flex-1">
+                <p class="font-semibold">{{ item.name }}</p>
+                <p class="text-gray-600 text-sm">${{ item.price }}</p>
               </div>
-            </div>
+              <button class="text-red-500 hover:text-red-700 text-xl">&times;</button>
+            </li>
+          </ul>
+          <p v-else class="text-gray-500 text-center py-4">Your cart is empty.</p>
+
+          <div v-if="cart.length" class="mt-4">
+            <p class="text-lg font-semibold">Total: ${{ cartTotal }}</p>
+            <button class="bg-orange-500 text-white w-full py-2 rounded-lg mt-2">Checkout</button>
           </div>
         </div>
       </div>
-
-      <!-- Best Selling Section -->
-      <div class="flex items-start gap-6">
-        <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-3">
-          <h2 class="text-2xl font-extrabold text-orange-600 flex items-center gap-2">
-            🔥 Best Selling
-          </h2>
-          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="../../assets/sales.jpg"
-              alt="Best Selling"
-              class="w-full object-cover transition-transform hover:scale-105 duration-300"
-            />
-          </div>
-        </div>
-
-        <!-- 3/4: Product Cards -->
-        <div class="w-3/4">
-          <div v-if="bestSellingProducts.length === 0" class="text-center py-6 text-red-500">
-            No bestselling products available.
-          </div>
-          <div v-else class="overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <div class="flex gap-6">
-              <div
-                v-for="product in bestSellingProducts.slice(0, 5)"
-                :key="product.id"
-                class="relative w-full p-4 bg-white shadow-lg rounded-xl "
-              >
-                <ProductCard
-                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
-                  :title="product.name"
-                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-                  buttonText="View Product"
-                  @view="viewProduct(product)"
-                  @wishlist="addToWishlist(product)"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
-  import Navbar from '../navbar/Navbar.vue';
-  import Banner from '../banner/Banner.vue';
-  import CategoryTabs from '../categorytabs/CategoryTabs.vue';
-  import ProductCard from '../products/ProductCard.vue';
-  import CategorySelector from '../categoryselector/CategorySelector.vue';
-  import { computed, ref, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+import { ref, computed } from "vue";
 
-  import useProductService from './HomeViewService';
-  import type { Product, ProductCategory } from './HomeViewTypes';
-  import ProductDetails from '../products/ProductDetails.vue';
+// Props passed down from parent
+defineProps<{
+  wishlist: {
+    id: number;
+    name: string;
+    images: { url: string }[];
+  }[];
+  onToggleWishlist?: () => void;
+}>();
 
-  const selectedProduct = ref<Product | null>(null);
-  const router = useRouter();
+const isModalOpen = ref(false);
+const isSidebarOpen = ref(false);
+const activeModal = ref<"auth" | null>(null);
+const sidebarActive = ref<"wishlist" | "cart" | null>(null);
+const isLogin = ref(true);
+const email = ref("");
+const password = ref("");
 
-  // View the selected product
-  function viewProduct(product: Product) {
-    // Navigate to the product details page
-    console.log(product.id)
-    router.push({ path: `/product/${product.id}` });
+// Local states for Cart
+const cart = ref([
+  { id: 1, name: "Laptop", price: 1200, image: "https://via.placeholder.com/50" },
+  { id: 2, name: "Headphones", price: 150, image: "https://via.placeholder.com/50" }
+]);
+
+const cartTotal = computed(() => cart.value.reduce((sum, item) => sum + item.price, 0));
+
+// Method to open modal
+const openModal = (modalType: "auth") => {
+  activeModal.value = modalType;
+  isModalOpen.value = true;
+};
+
+// Method to open sidebar
+const openSidebar = (type: "wishlist" | "cart") => {
+  sidebarActive.value = type;
+  isSidebarOpen.value = true;
+};
+
+// Method to remove item from wishlist
+const removeFromWishlist = (item: { id: number }) => {
+  // Remove the item from the wishlist
+  const index = wishlist.findIndex(i => i.id === item.id);
+  if (index !== -1) {
+    wishlist.splice(index, 1);
   }
+};
 
-  // Close tstoreListhe product details modal
-  function closeProductDetails() {
-    selectedProduct.value = null;
-  }
-
-  function handleCheckout(product: Product) {
-    // Handle checkout functionality
-    alert(`Proceeding to checkout for ${product.name}`);
-  }
-
-  const activeCategory = ref<string>(''); // Initialize with an empty string
-
-
-  const { fetchProducts } = useProductService();
-
-  const {
-    data: storeData,
-    isSuccess: storeDataIsSuccess,
-    isPending: storeDataIsPending,
-    mutate: fetchProductMutate
-  } = fetchProducts();
-
-  const storeList = ref<Product[]>([]);
-
-  const fetchProduct = () => {
-    fetchProductMutate(undefined, {
-      onSuccess: (data) => {
-        // console.log(' Store Data:', data);
-        // console.log('Fetched Store Data:', data);
-        storeList.value = data ;
-        console.log('Fetched Store Data:', storeList.value);
-
-
-      },
-      onError: (error) => {
-        console.error('Error fetching stores:', error);
-      }
-    });
-  };
-
-  onMounted(fetchProduct);
-
-  // Filter featured products
-  const featuredProducts = computed(() => {
-    return storeList.value.filter(product => product.is_featured);
-  });
-
-  // Filter bestselling products based on quantity (or sales logic)
-  const bestSellingProducts = computed(() => {
-    return storeList.value.sort((a, b) => b.quantity - a.quantity); // Example using quantity
+// Method to move item to cart
+const moveToCart = (item: { id: number, name: string, images: { url: string }[] }) => {
+  // Add the item to the cart
+  cart.value.push({
+    id: item.id,
+    name: item.name,
+    price: 100, // Set your price or use item.price if available
+    image: 'https://via.placeholder.com/50', // Use the correct image or the one from the item
   });
   
-  const wishlist = ref<any[]>([]); 
-  const addToWishlist = (product: any) => {
-  const exists = wishlist.value.find(p => p.id === product.id);
-  if (!exists) wishlist.value.push(product);
+  // Remove the item from the wishlist
+  removeFromWishlist(item);
 };
 </script>
+
+<style scoped>
+/* Sidebar animations */
+.transform {
+  transform: translateX(100%);
+}
+.translate-x-0 {
+  transform: translateX(0);
+}
+</style>
