@@ -1,6 +1,6 @@
 <template>
   <div class="py-8 min-h-screen bg-gray-00">
-    <Navbar />
+    <Navbar :wishlist="wishlist" />
     <Banner />
 
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-8">
@@ -36,7 +36,12 @@
               <span v-for="i in 4" :key="i">★</span><span class="text-gray-400">★</span>
               <span class="text-sm text-gray-500 ml-2">(123 reviews)</span>
             </div>
-            <button class="text-orange-600 hover:underline">❤️ Add to Wishlist</button>
+            <button 
+              class="text-orange-600 hover:underline"
+              @click="toggleWishlist"
+            >
+              {{ isInWishlist ? '❤️ Remove from Wishlist' : '❤️ Add to Wishlist' }}
+            </button>
           </div>
 
           <p class="text-lg text-gray-700 leading-relaxed">
@@ -111,8 +116,6 @@
     </div>
   </div>
 </template>
-
-
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -127,6 +130,9 @@ import type { Product } from '../homeview/HomeViewTypes';
 const product = ref<Product[]>([]);
 const route = useRoute();
 const router = useRouter();
+
+// Wishlist state
+const wishlist = ref<Product[]>([]);
 
 const { fetchProductforSpecificStore } = useProductService();
 const { mutate: fetchProductMutate } = fetchProductforSpecificStore();
@@ -152,10 +158,10 @@ onMounted(() => {
 });
 
 const ProductDetails = computed(() => {
-    return product.value.filter(product => product.id !== null);
-  });
+  return product.value.filter(product => product.id !== null);
+});
 
-  const selectedImageIndex = ref(0);
+const selectedImageIndex = ref(0);
 
 function selectImage(index: number) {
   selectedImageIndex.value = index;
@@ -177,5 +183,19 @@ function goBack() {
   router.back();
 }
 
+// Wishlist functions
+const isInWishlist = computed(() => {
+  return wishlist.value.some(item => item.id === ProductDetails.value[0]?.id);
+});
 
+function toggleWishlist() {
+  const productToAdd = ProductDetails.value[0];
+  if (isInWishlist.value) {
+    // Remove from wishlist
+    wishlist.value = wishlist.value.filter(item => item.id !== productToAdd?.id);
+  } else {
+    // Add to wishlist
+    wishlist.value.push(productToAdd);
+  }
+}
 </script>

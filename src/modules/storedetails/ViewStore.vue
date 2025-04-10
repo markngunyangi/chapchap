@@ -75,10 +75,11 @@ function viewProduct(product: Product) {
 const goBack = () => {
   router.back();
 };
+const wishlist = ref<Product[]>([]);
 </script>
 
 <template>
-  <Navbar />
+  <Navbar :wishlist="wishlist"/>
   <div class="p-6">
     <div class="flex items-center mb-6 py-6">
       <button @click="goBack" class="text-orange-500 text-md hover:text-orange-600 flex items-center mr-4">
