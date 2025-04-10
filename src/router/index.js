@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../modules/homeview/HomeView.vue';
 import Stores from '../modules/storedetails/StoreDetails.vue';
 import StoreDetails from '../modules/storedetails/ViewStore.vue';
-
+import ProductDetails from '../modules/products/ProductDetails.vue';
 import NotFoundView from '../modules/exception/NotFound.vue';
 import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
 import AddJobView from '@/views/AddJobView.vue';
@@ -15,6 +15,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+    },
+    {
+      path: '/product/:id', // Dynamic route for the product page
+      name: 'productDetails',
+      component: ProductDetails,
+      props: true, // This allows passing the route params as props to the component
     },
     {
       path: '/stores',

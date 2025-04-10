@@ -12,7 +12,7 @@ const useProductService = () => {
 
 function fetchProductforSpecificStore() {
     return useMutation({
-      mutationFn: (storeId: number) => getProductforSpecificStore(storeId), 
+      mutationFn: (storeId: string) => getProductforSpecificStore(storeId), 
       onSuccess: (data) => {
         console.log('Fetched data:', data);
       },
