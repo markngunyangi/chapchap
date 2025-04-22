@@ -3,7 +3,7 @@
     <Navbar :wishlist="wishlist" @toggle-wishlist="openWishlistSidebar" />
 
     <Banner />
-    <CategoryTabs />
+    <!-- <CategoryTabs /> -->
     <CategorySelector />
 
     <div class="p-6 md:p-10 space-y-16 bg-gray-50">

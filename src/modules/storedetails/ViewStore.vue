@@ -75,7 +75,11 @@ function viewProduct(product: Product) {
 const goBack = () => {
   router.back();
 };
-const wishlist = ref<Product[]>([]);
+const wishlist = ref<any[]>([]); 
+const addToWishlist = (product: any) => {
+const exists = wishlist.value.find(p => p.id === product.id);
+if (!exists) wishlist.value.push(product);
+};
 </script>
 
 <template>
@@ -159,6 +163,7 @@ const wishlist = ref<Product[]>([]);
               :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
               buttonText="View Product"
               @view="viewProduct(product)"
+              @wishlist="addToWishlist(product)"
             />
           </div>
           <div v-if="filteredStores.length === 0 && storeDataIsSuccess" class="text-center py-6 col-span-full text-gray-500">

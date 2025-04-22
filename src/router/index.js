@@ -7,7 +7,7 @@ import NotFoundView from '../modules/exception/NotFound.vue';
 import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
 import AddJobView from '@/views/AddJobView.vue';
 import EditJobView from '@/views/EditJobView.vue';
-
+import Checkout from '../modules/checkout/Checkout.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -20,6 +20,12 @@ const router = createRouter({
       path: '/product/:id', // Dynamic route for the product page
       name: 'productDetails',
       component: ProductDetails,
+      props: true, // This allows passing the route params as props to the component
+    },
+    {
+      path: '/checkout/:id', // Dynamic route for the product page
+      name: 'checkout',
+      component: Checkout,
       props: true, // This allows passing the route params as props to the component
     },
     {

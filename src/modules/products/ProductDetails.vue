@@ -1,13 +1,12 @@
 <template>
   <div class="py-8 min-h-screen bg-gray-00">
     <Navbar :wishlist="wishlist" />
-    <Banner />
 
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-8">
       <div class="flex flex-col md:flex-row gap-10">
         <!-- Product Image -->
         <div class="w-full md:w-1/2 space-y-4">
-          <div class="relative overflow-hidden rounded-xl border">
+          <div class="relative overflow-hidden rounded border">
             <img
               :src="imageUrl"
               alt="Product Image"
@@ -36,12 +35,19 @@
               <span v-for="i in 4" :key="i">★</span><span class="text-gray-400">★</span>
               <span class="text-sm text-gray-500 ml-2">(123 reviews)</span>
             </div>
-            <button 
-              class="text-orange-600 hover:underline"
-              @click="toggleWishlist"
-            >
-              {{ isInWishlist ? '❤️ Remove from Wishlist' : '❤️ Add to Wishlist' }}
-            </button>
+            <button
+            @click.stop="toggleWishlist"
+            :class="{
+              'text-red-500': isInWishlist, 
+              'text-gray-400': !isInWishlist
+            }"
+            class="absolute top-3 right-3 transition-colors"
+            title="Add to Wishlist"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3.172 5.172a4.004 4.004 0 015.656 0L10 6.343l1.172-1.171a4.004 4.004 0 115.656 5.656L10 17.657l-6.828-6.829a4.004 4.004 0 010-5.656z" />
+            </svg>
+          </button>
           </div>
 
           <p class="text-lg text-gray-700 leading-relaxed">
@@ -132,7 +138,11 @@ const route = useRoute();
 const router = useRouter();
 
 // Wishlist state
-const wishlist = ref<Product[]>([]);
+const wishlist = ref<any[]>([]); 
+const addToWishlist = (product: any) => {
+const exists = wishlist.value.find(p => p.id === product.id);
+if (!exists) wishlist.value.push(product);
+};
 
 const { fetchProductforSpecificStore } = useProductService();
 const { mutate: fetchProductMutate } = fetchProductforSpecificStore();
