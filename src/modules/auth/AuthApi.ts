@@ -17,7 +17,7 @@ export async function registerUser(payload: AuthPayload): Promise<AuthResponse> 
 
 export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
     const response = await Http.post<AuthResponse>(
-      '/users/login', 
+      '/customer/login', 
       payload,
       {}
     );

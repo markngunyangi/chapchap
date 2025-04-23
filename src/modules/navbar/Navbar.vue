@@ -74,7 +74,7 @@
       <!-- Wishlist Content -->
       <div v-if="sidebarActive === 'wishlist'">
         <ul v-if="wishlist.length">
-          <li
+          <!-- <li
             v-for="item in wishlist"
             :key="item.id"
             class="flex items-center gap-4 border-b py-3"
@@ -88,7 +88,13 @@
               <button class="text-blue-500 text-sm">Move to Cart</button>
             </div>
             <button class="text-red-500 hover:text-red-700 text-xl">&times;</button>
-          </li>
+          </li> -->
+          <WishlistSidebar
+            v-if="sidebarActive === 'wishlist'"
+            :wishlist="wishlist"
+            :closeSidebar="closeSidebar"
+          />
+
         </ul>
         <p v-else class="text-gray-500 text-center py-4">Your wishlist is empty.</p>
       </div>
@@ -128,6 +134,7 @@
 <script setup lang="ts">
 import { ref, computed,onMounted,onUnmounted } from "vue";
 import AuthSideBar from "../auth/AuthSideBar.vue";
+import WishlistSidebar from "../wishlist/Wishlist.vue";
 // Props passed down from parent
 defineProps<{
   wishlist: {
