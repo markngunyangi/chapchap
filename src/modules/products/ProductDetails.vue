@@ -1,33 +1,33 @@
 <template>
-  <div class="py-8 min-h-screen bg-gray-00">
-    <Navbar  />
+  <div class="py-8 min-h-screen bg-gray-50">
+    <Navbar />
 
-    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-8">
-      <div class="flex flex-col md:flex-row gap-10">
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-2xl p-8 mt-8">
+      <div class="flex flex-col md:flex-row gap-12">
         <!-- Product Image -->
-        <div class="w-full md:w-1/2 space-y-4">
-          <div class="relative overflow-hidden rounded border">
+        <div class="w-full md:w-1/2 space-y-6">
+          <div class="relative overflow-hidden rounded-lg border shadow-md">
             <img
               :src="imageUrl"
               alt="Product Image"
-              class="w-full h-72 object-contain hover:scale-105 transition-transform duration-300"
+              class="w-full h-80 object-contain hover:scale-105 transition-transform duration-300 rounded-lg"
             />
           </div>
-          <!-- Product thumbnails -->
-          <div class="flex gap-2">
+          <!-- Product Thumbnails -->
+          <div class="flex gap-4 justify-center">
             <img
               v-for="(img, index) in ProductDetails[0]?.images || []"
               :key="index"
               :src="'https://chapchap.marshsoft.org' + img.url"
-              class="w-16 h-16 object-cover border rounded cursor-pointer hover:ring-2 ring-orange-500"
+              class="w-20 h-20 object-cover border rounded-lg cursor-pointer hover:ring-4 ring-orange-500 transition-transform"
               @click="selectImage(index)"
             />
           </div>
         </div>
 
         <!-- Product Info -->
-        <div class="flex-1 space-y-4">
-          <h1 class="text-3xl font-extrabold text-gray-900">{{ ProductDetails[0]?.name }}</h1>
+        <div class="flex-1 space-y-6">
+          <h1 class="text-4xl font-extrabold text-gray-900">{{ ProductDetails[0]?.name }}</h1>
 
           <!-- Rating + Wishlist -->
           <div class="flex items-center justify-between">
@@ -36,63 +36,63 @@
               <span class="text-sm text-gray-500 ml-2">(123 reviews)</span>
             </div>
             <button
-            @click.stop="toggleWishlist"
-            :class="{
-              'text-red-500': isInWishlist, 
-              'text-gray-400': !isInWishlist
-            }"
-            class="absolute top-3 right-3 transition-colors"
-            title="Add to Wishlist"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M3.172 5.172a4.004 4.004 0 015.656 0L10 6.343l1.172-1.171a4.004 4.004 0 115.656 5.656L10 17.657l-6.828-6.829a4.004 4.004 0 010-5.656z" />
-            </svg>
-          </button>
+              @click.stop="toggleWishlist"
+              :class="{
+                'text-red-500': isInWishlist,
+                'text-gray-400': !isInWishlist
+              }"
+              class="transition-colors text-3xl"
+              title="Add to Wishlist"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3.172 5.172a4.004 4.004 0 015.656 0L10 6.343l1.172-1.171a4.004 4.004 0 115.656 5.656L10 17.657l-6.828-6.829a4.004 4.004 0 010-5.656z" />
+              </svg>
+            </button>
           </div>
 
-          <p class="text-lg text-gray-700 leading-relaxed">
+          <p class="text-lg text-gray-700 leading-relaxed mt-2">
             {{ ProductDetails[0]?.description || 'No description provided.' }}
           </p>
 
           <!-- Price Info -->
-          <div class="text-xl space-y-1">
+          <div class="text-xl space-y-1 mt-6">
             <p class="text-gray-500 line-through">Ksh {{ ProductDetails[0]?.gross_price?.toFixed(2) }}</p>
             <p class="text-orange-600 font-semibold">Net Price: Ksh {{ ProductDetails[0]?.net_price?.toFixed(2) }}</p>
             <p class="text-green-600 text-sm">You save {{ ProductDetails[0]?.discount }}%</p>
           </div>
 
           <!-- Attributes -->
-          <div v-if="ProductDetails[0]?.attributes" class="text-sm">
-            <h3 class="font-semibold text-gray-700 mb-1">Attributes</h3>
+          <div v-if="ProductDetails[0]?.attributes" class="text-sm mt-4">
+            <h3 class="font-semibold text-gray-700 mb-2">Attributes</h3>
             <ul class="flex gap-4">
-              <li class="bg-gray-100 px-3 py-1 rounded">Size: {{ ProductDetails[0]?.attributes?.size }}</li>
-              <li class="bg-gray-100 px-3 py-1 rounded">Color: {{ ProductDetails[0]?.attributes?.color }}</li>
+              <li class="bg-gray-100 px-4 py-2 rounded-full text-gray-700">Size: {{ ProductDetails[0]?.attributes?.size }}</li>
+              <li class="bg-gray-100 px-4 py-2 rounded-full text-gray-700">Color: {{ ProductDetails[0]?.attributes?.color }}</li>
             </ul>
           </div>
 
           <!-- Availability -->
-          <p class="text-sm text-gray-700">
+          <p class="text-sm text-gray-700 mt-4">
             <span class="font-medium">In stock:</span> {{ ProductDetails[0]?.quantity }} items
           </p>
 
           <!-- Category Info -->
-          <div class="text-sm text-gray-500">
+          <div class="text-sm text-gray-500 mt-2">
             <p>Category: {{ ProductDetails[0]?.product_categories?.name }}</p>
             <p>Sub-category: {{ ProductDetails[0]?.product_sub_categories?.name }}</p>
           </div>
 
           <!-- Delivery Info -->
-          <div class="bg-gray-50 border text-sm rounded p-3 mt-4">
+          <div class="bg-gray-50 border text-sm rounded-lg p-4 mt-6">
             🚚 <strong>Free delivery</strong> within 3-5 business days. <br />
             🔄 Easy returns within 7 days.
           </div>
 
           <!-- Store Info -->
-          <div class="border-t pt-4 mt-4 flex gap-4 items-center">
+          <div class="border-t pt-6 mt-6 flex gap-6 items-center">
             <img
               :src="'https://chapchap.marshsoft.org' + ProductDetails[0]?.stores?.logoUrl"
               alt="Store Logo"
-              class="w-14 h-14 object-cover rounded-full border"
+              class="w-16 h-16 object-cover rounded-full border"
             />
             <div class="text-sm text-gray-700">
               <p class="font-semibold">{{ ProductDetails[0]?.stores?.name }}</p>
@@ -103,15 +103,15 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-4 pt-6">
+          <div class="flex flex-wrap gap-6 pt-8">
             <button
-              class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded-xl transition"
+              class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-xl transition-transform transform hover:scale-105"
               @click="checkout"
             >
               🛒 Proceed to Checkout
             </button>
             <button
-              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-xl transition"
+              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-8 rounded-xl transition-transform transform hover:scale-105"
               @click="goBack"
             >
               ← Back to Products
@@ -122,6 +122,7 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -150,7 +151,6 @@ onMounted(() => {
     onSuccess: (data: Product[]) => {
       if (data) {
         product.value = data;
-        console.log('Fetched product:', data);
       } else {
         console.warn('No product data returned');
         product.value = [];
@@ -184,8 +184,9 @@ function selectImage(index: number) {
 
 function checkout() {
   if (ProductDetails.value.length > 0) {
-    router.push({ name: 'checkout', params: { productId: ProductDetails.value[0].id } });
-  }
+    router.push({ name: 'checkout',query: { productIds: ProductDetails.value[0].id }  });
+
+  } 
 }
 
 function goBack() {
