@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :wishlist="wishlist" @toggle-wishlist="openWishlistSidebar" />
+    <Navbar :wishlist="wishlistStore.items" @toggle-wishlist="openWishlistSidebar" />
 
     <Banner />
     <!-- <CategoryTabs /> -->
@@ -43,7 +43,6 @@
                   buttonText="View Product"
                   @view="viewProduct(product)"
                   @wishlist="addToWishlist(product)"
-
                 />
                 <button
                   @click="addToWishlist(product)"
@@ -103,7 +102,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
   import Navbar from '../navbar/Navbar.vue';
   import Banner from '../banner/Banner.vue';
@@ -116,9 +114,13 @@
   import useProductService from './HomeViewService';
   import type { Product, ProductCategory } from './HomeViewTypes';
   import ProductDetails from '../products/ProductDetails.vue';
+  import { useWishlistStore } from '../wishlist/WishlistStore';  // Import Pinia store for wishlist
 
   const selectedProduct = ref<Product | null>(null);
   const router = useRouter();
+
+  // Access the wishlist store
+  const wishlistStore = useWishlistStore();
 
   // View the selected product
   function viewProduct(product: Product) {
@@ -127,7 +129,7 @@
     router.push({ path: `/product/${product.id}` });
   }
 
-  // Close tstoreListhe product details modal
+  // Close product details modal
   function closeProductDetails() {
     selectedProduct.value = null;
   }
@@ -138,7 +140,6 @@
   }
 
   const activeCategory = ref<string>(''); // Initialize with an empty string
-
 
   const { fetchProducts } = useProductService();
 
@@ -154,12 +155,8 @@
   const fetchProduct = () => {
     fetchProductMutate(undefined, {
       onSuccess: (data) => {
-        // console.log(' Store Data:', data);
-        // console.log('Fetched Store Data:', data);
-        storeList.value = data ;
+        storeList.value = data;
         console.log('Fetched Store Data:', storeList.value);
-
-
       },
       onError: (error) => {
         console.error('Error fetching stores:', error);
@@ -178,10 +175,9 @@
   const bestSellingProducts = computed(() => {
     return storeList.value.sort((a, b) => b.quantity - a.quantity); // Example using quantity
   });
-  
-  const wishlist = ref<any[]>([]); 
-  const addToWishlist = (product: any) => {
-  const exists = wishlist.value.find(p => p.id === product.id);
-  if (!exists) wishlist.value.push(product);
-};
+
+  // Add product to the wishlist using Pinia store
+  const addToWishlist = (product: Product) => {
+    wishlistStore.addToWishlist(product);  // Add product to the wishlist store
+  };
 </script>

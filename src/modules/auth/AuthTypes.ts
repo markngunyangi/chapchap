@@ -19,4 +19,7 @@ export type AuthPayload {
   export type LoginPayload = {
     email: string;
     password: string;
+    name?: string; // Make it optional if not needed
+    telephone?: string; // Make it optional if not needed
+    role_id?: string;
   };

@@ -181,6 +181,7 @@ function selectImage(index: number) {
   selectedImageIndex.value = index;
 }
 
+
 function checkout() {
   if (ProductDetails.value.length > 0) {
     router.push({ name: 'checkout', params: { productId: ProductDetails.value[0].id } });

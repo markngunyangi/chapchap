@@ -1,5 +1,5 @@
 import { Http } from '@/http';
-import type { AuthPayload, AuthResponse } from './AuthTypes';
+import type { AuthPayload, AuthResponse,LoginPayload  } from './AuthTypes';
 
 export async function registerUser(payload: AuthPayload): Promise<AuthResponse> {
   const response = await Http.post<AuthResponse>(
@@ -15,7 +15,7 @@ export async function registerUser(payload: AuthPayload): Promise<AuthResponse> 
   return response;
 }
 
-export async function loginUser(payload: AuthPayload): Promise<AuthResponse> {
+export async function loginUser(payload: LoginPayload): Promise<AuthResponse> {
     const response = await Http.post<AuthResponse>(
       '/customer/login', 
       payload,

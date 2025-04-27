@@ -126,6 +126,9 @@ const { success, error } = useNotification();
 
 // Auth API hook
 const { useRegisterUser, useLoginUser } = useAuthService();
+
+
+// Form submission logic
 const {
   mutate: registerUserMutate,
   isPending: isRegistering,
@@ -149,31 +152,29 @@ function submitForm() {
     };
 
     loginUserMutate(loginPayload, {
-  onSuccess: (data: AuthResponse) => {
-    userInfo.value = data;
-    // On successful login
-authStore.setToken(data.token);
-    const token = data.token; // Assuming the token is in data.token
+      onSuccess: (data: AuthResponse) => {
+        userInfo.value = data;
+        // On successful login
+        authStore.setToken(data.token);
+        const token = data.token; // Assuming the token is in data.token
 
-    // Store the token in localStorage
-    localStorage.setItem('authToken', token);
+        // Store the token in localStorage
+        localStorage.setItem('authToken', token);
 
-    // Set logged-in state to true
-    isLoggedIn.value = true;
+        // Set logged-in state to true
+        isLoggedIn.value = true;
 
-    success(`Welcome, ${data.user.name}!`);
 
-    // Clear inputs after successful login
-    clearForm();
+        // Clear inputs after successful login
+        clearForm();
 
-    // Close modal if applicable
-    closeModal();
-  },
-  onError: (err) => {
-    error('Login failed. Please check your credentials.');
-  }
-});
-
+        // Close modal if applicable
+        closeModal();
+      },
+      onError: (err) => {
+        error('Login failed. Please check your credentials.');
+      }
+    });
   } else {
     const signupPayload: AuthPayload = {
       name: name.value,
@@ -188,14 +189,17 @@ authStore.setToken(data.token);
         userInfo.value = data;
         success('Registered successfully');
         console.log('Registered successfully:', data);
-        
+
         // Set signUpSuccess to true to show the "Please log in" message
         signUpSuccess.value = true;
         
+        // Switch to login after successful sign up
+        isLogin.value = true;  // Automatically toggle to login form
+
         // Clear inputs after successful registration
         clearForm();
         // Close modal if applicable
-        closeModal();
+        // closeModal();
       },
       onError: (err) => {
         error('Registration failed. Please try again.');
