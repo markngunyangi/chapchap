@@ -11,7 +11,6 @@
       />
       <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
     </div> -->
-    
     <div class="flex gap-6 items-center text-sm text-white">
       <!-- Sign Up/Login Button -->
       <button 
@@ -137,7 +136,8 @@
 
         <div v-if="cart.length" class="mt-4">
           <p class="text-lg font-semibold">Total: ${{ cartTotal }}</p>
-          <button class="bg-orange-500 text-white w-full py-2 rounded-lg mt-2">
+          <button class="bg-orange-500 text-white w-full py-2 rounded-lg mt-2"
+          @click="checkout">
             Checkout
           </button>
         </div>
@@ -145,7 +145,6 @@
     </div>
   </div>
 </div>
-
 
 </template>
 
@@ -155,11 +154,13 @@ import AuthSideBar from "../auth/AuthSideBar.vue";
 import WishlistSidebar from "../wishlist/Wishlist.vue";
 import Cart from "../cart/Cart.vue";
 // Props passed down from parent
+import { useRoute, useRouter } from 'vue-router';
 
 import { useWishlistStore } from '../wishlist/WishlistStore';
 import { useCartStore } from '../cart/CartStore';
 import { useAuthStore } from '../auth/AuthStore';
-
+import Checkout from "../checkout/Checkout.vue";
+const router = useRouter();
 const authStore = useAuthStore();
   const wishlistStore = useWishlistStore();  // Access the store
   const cartStore = useCartStore();  // Access the store
@@ -202,6 +203,21 @@ function openAuthSidebar() {
   isSidebarOpen.value = true;
   isLogin.value = true;
 }
+
+
+function checkout() {
+  // Accessing the computed cart value with .value
+  const productIds = cart.value.map(product => product.id);
+
+  // Redirecting to the checkout route with the product IDs as query params
+  router.push({
+    name: 'checkout',
+    query: { productIds: productIds.join(',') }  // Joining IDs as a comma-separated string
+  });
+}
+
+
+
 
 
 

@@ -5,6 +5,7 @@ import StoreDetails from '../modules/storedetails/ViewStore.vue';
 import ProductDetails from '../modules/products/ProductDetails.vue';
 import NotFoundView from '../modules/exception/NotFound.vue';
 import RestaurantsPage from '../modules/restaurants/Restaurant.vue';
+import Services from '../modules/services/Services.vue';
 import AddJobView from '@/views/AddJobView.vue';
 import EditJobView from '@/views/EditJobView.vue';
 import Checkout from '../modules/checkout/Checkout.vue'
@@ -23,10 +24,10 @@ const router = createRouter({
       props: true, // This allows passing the route params as props to the component
     },
     {
-      path: '/checkout/:id', // Dynamic route for the product page
+      path: '/checkout',
       name: 'checkout',
       component: Checkout,
-      props: true, // This allows passing the route params as props to the component
+      props: route => ({ ids: route.query.ids }), // This allows passing the route params as props to the component
     },
     {
       path: '/stores',
@@ -40,11 +41,11 @@ const router = createRouter({
     },
     { path: '/store/:id', name: 'StoreDetails', component: StoreDetails, props: true },
 
-    // { 
-    //   path: '/service-request',
-    //   name:'service-request', 
-    //   component: ServiceRequestPage 
-    // },
+    { 
+      path: '/service-request',
+      name:'service-request', 
+      component: Services 
+    },
 
     {
       path: '/:catchAll(.*)',
