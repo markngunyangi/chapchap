@@ -1,6 +1,6 @@
 <template>
   <div class="py-8 min-h-screen bg-gray-00">
-    <Navbar :wishlist="wishlist" />
+    <Navbar  />
 
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-8">
       <div class="flex flex-col md:flex-row gap-10">
@@ -127,55 +127,44 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useProductService from './productsService';
 import Navbar from '../navbar/Navbar.vue';
-import Banner from '../banner/Banner.vue';
-import CategoryTabs from '../categorytabs/CategoryTabs.vue';
-import CategorySelector from '../categoryselector/CategorySelector.vue';
+import { useWishlistStore } from '../wishlist/WishlistStore'; // Import the store
 import type { Product } from '../homeview/HomeViewTypes';
 
-// Define `product` as a ref of type Product | null
+// State
 const product = ref<Product[]>([]);
+const selectedImageIndex = ref(0);
+
 const route = useRoute();
 const router = useRouter();
 
-// Wishlist state
-const wishlist = ref<any[]>([]); 
-const addToWishlist = (product: any) => {
-const exists = wishlist.value.find(p => p.id === product.id);
-if (!exists) wishlist.value.push(product);
-};
+// Access the wishlist store
+const wishlistStore = useWishlistStore();
 
-const { fetchProductforSpecificStore } = useProductService();
-const { mutate: fetchProductMutate } = fetchProductforSpecificStore();
-
+// Fetch product details
 onMounted(() => {
   const productId = route.params.id as string;
 
+  const { mutate: fetchProductMutate } = useProductService().fetchProductforSpecificStore();
+
   fetchProductMutate(productId, {
-    onSuccess: (data) => {
-      // If data is undefined or invalid, set product to null
+    onSuccess: (data: Product[]) => {
       if (data) {
-        product.value = data; // Assign the product data
+        product.value = data;
+        console.log('Fetched product:', data);
       } else {
-        product.value = null; // If no data, set to null
+        console.warn('No product data returned');
+        product.value = [];
       }
-      console.log('Fetched product 1:', product.value);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Failed to fetch product:', error);
-      product.value = null; // In case of error, set product to null
+      product.value = [];
     }
   });
 });
 
-const ProductDetails = computed(() => {
-  return product.value.filter(product => product.id !== null);
-});
-
-const selectedImageIndex = ref(0);
-
-function selectImage(index: number) {
-  selectedImageIndex.value = index;
-}
+// Computed
+const ProductDetails = computed(() => product.value.filter(p => p.id !== null));
 
 const imageUrl = computed(() => {
   const base = 'https://chapchap.marshsoft.org';
@@ -183,9 +172,18 @@ const imageUrl = computed(() => {
   return img ? base + img : base + '/uploads/shirt.jpeg';
 });
 
+const isInWishlist = computed(() => {
+  return wishlistStore.wishlist.some(item => item.id === ProductDetails.value[0]?.id);
+});
+
+// Methods
+function selectImage(index: number) {
+  selectedImageIndex.value = index;
+}
+
 function checkout() {
-  if (product.value) {
-    router.push({ name: 'checkout', params: { productId: product.value.id } });
+  if (ProductDetails.value.length > 0) {
+    router.push({ name: 'checkout', params: { productId: ProductDetails.value[0].id } });
   }
 }
 
@@ -193,19 +191,18 @@ function goBack() {
   router.back();
 }
 
-// Wishlist functions
-const isInWishlist = computed(() => {
-  return wishlist.value.some(item => item.id === ProductDetails.value[0]?.id);
-});
-
 function toggleWishlist() {
   const productToAdd = ProductDetails.value[0];
+  if (!productToAdd) return;
+
   if (isInWishlist.value) {
-    // Remove from wishlist
-    wishlist.value = wishlist.value.filter(item => item.id !== productToAdd?.id);
+    wishlistStore.removeFromWishlist(productToAdd.id);
   } else {
-    // Add to wishlist
-    wishlist.value.push(productToAdd);
+    wishlistStore.addToWishlist(productToAdd);
   }
+}
+
+function handleRemoveWishlist(id: number) {
+  wishlistStore.removeFromWishlist(id);
 }
 </script>

@@ -5,6 +5,7 @@ import Navbar from '../navbar/Navbar.vue';
 import ProductCard from '../products/ProductCard.vue';
 import useProductService from '../products/productsService';
 import type { Product } from '../products/productsTypes';
+import { useWishlistStore } from '../wishlist/WishlistStore';
 
 const router = useRouter();
 const route = useRoute();
@@ -75,15 +76,31 @@ function viewProduct(product: Product) {
 const goBack = () => {
   router.back();
 };
-const wishlist = ref<any[]>([]); 
+
+const wishlistStore = useWishlistStore();  // Use Pinia store
 const addToWishlist = (product: any) => {
-const exists = wishlist.value.find(p => p.id === product.id);
-if (!exists) wishlist.value.push(product);
+  console.log('Adding to wishlist:', product);
+  wishlistStore.addToWishlist(product);  // Add to wishlist in store
 };
+
+const handleRemoveWishlist = (id: number) => {
+  console.log('Removing from wishlist, ID:', id);
+  wishlistStore.removeFromWishlist(id);  // Remove from wishlist in store
+};
+
+// Log changes in the wishlist store
+watch(
+  () => wishlistStore.wishlist, 
+  (newWishlist) => {
+    console.log('Wishlist updated:', newWishlist);
+  },
+  { deep: true }
+);
 </script>
 
+
 <template>
-  <Navbar :wishlist="wishlist"/>
+  <Navbar   />
   <div class="p-6">
     <div class="flex items-center mb-6 py-6">
       <button @click="goBack" class="text-orange-500 text-md hover:text-orange-600 flex items-center mr-4">

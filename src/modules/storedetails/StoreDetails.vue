@@ -62,11 +62,16 @@ const goBack = () => {
   router.back();
 };
 
-const wishlist = ref<Product[]>([]);
+const wishlist = ref<any[]>([]); 
+const addToWishlist = (product: any) => {
+const exists = wishlist.value.find(p => p.id === product.id);
+if (!exists) wishlist.value.push(product);
+};
 </script>
 
 <template>
-  <Navbar :wishlist="wishlist"/>
+  <Navbar :wishlist="wishlist" 
+   />
   <div class="p-6">
     <div class="flex items-center mb-6 py-6">
       <button @click="goBack" class="text-orange-500 text-md hover:text-orange-600 flex items-center mr-4">

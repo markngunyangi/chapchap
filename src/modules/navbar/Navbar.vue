@@ -3,7 +3,6 @@
     <router-link to="/">
       <img src="@/assets/Pasted.png" alt="Chap Chap E-Mall" class="h-24 w-full cursor-pointer" />
     </router-link>
-    
     <div class="relative w-1/3">
       <input
         type="text"
@@ -27,13 +26,14 @@
         @click="openSidebar('wishlist')" 
         class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
         Wish List ({{ wishlist.length }})
+        <!-- {{ wishlist }} -->
       </button>
     
       <!-- Cart Button -->
       <button 
         @click="openSidebar('cart')" 
         class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
-        My Cart
+        My Cart({{ cart.length }})
       </button>
     </div>
   </nav>
@@ -93,6 +93,7 @@
             v-if="sidebarActive === 'wishlist'"
             :wishlist="wishlist"
             :closeSidebar="closeSidebar"
+             @remove="handleRemove"
           />
 
         </ul>
@@ -102,7 +103,7 @@
       <!-- Cart Content -->
       <div v-if="sidebarActive === 'cart'">
         <ul v-if="cart.length">
-          <li
+          <!-- <li
             v-for="item in cart"
             :key="item.id"
             class="flex items-center gap-4 border-b py-3"
@@ -113,7 +114,8 @@
               <p class="text-gray-600 text-sm">${{ item.price }}</p>
             </div>
             <button class="text-red-500 hover:text-red-700 text-xl">&times;</button>
-          </li>
+          </li> -->
+          <Cart/>
         </ul>
         <p v-else class="text-gray-500 text-center py-4">Your cart is empty.</p>
 
@@ -135,15 +137,37 @@
 import { ref, computed,onMounted,onUnmounted } from "vue";
 import AuthSideBar from "../auth/AuthSideBar.vue";
 import WishlistSidebar from "../wishlist/Wishlist.vue";
+import Cart from "../cart/Cart.vue";
 // Props passed down from parent
-defineProps<{
-  wishlist: {
-    id: number;
-    name: string;
-    image: string;
-  }[];
-  onToggleWishlist?: () => void;
-}>();
+
+import { useWishlistStore } from '../wishlist/WishlistStore';
+import { useCartStore } from '../cart/CartStore';
+
+  const wishlistStore = useWishlistStore();  // Access the store
+  const cartStore = useCartStore();  // Access the store
+  
+  // Directly use a computed property to get the wishlist from the store
+  const wishlist = computed(() => wishlistStore.wishlist);  // This ensures reactivity
+  const cart = computed(() => cartStore.cart);  // This ensures reactivity
+  
+
+// defineProps<{
+//   wishlist: {
+//     id: number;
+//     name: string;
+//     image: string;
+//   }[];
+//   onToggleWishlist?: () => void;
+// }>();
+
+// const emit = defineEmits<{
+//   (e: 'remove', id: number): void;
+// }>();
+
+// function handleRemove(id: number) {
+//   console.log('clicked',id)
+//   emit('remove', id);
+// }
 
 const isModalOpen = ref(false);
 const isSidebarOpen = ref(false);
@@ -169,12 +193,15 @@ function closeSidebar() {
 }
 
 // Local states for Cart
-const cart = ref([
-  { id: 1, name: "Laptop", price: 1200, image: "https://via.placeholder.com/50" },
-  { id: 2, name: "Headphones", price: 150, image: "https://via.placeholder.com/50" }
-]);
+// const cart = ref([
+//   { id: 1, name: "Laptop", price: 1200, image: "https://via.placeholder.com/50" },
+//   { id: 2, name: "Headphones", price: 150, image: "https://via.placeholder.com/50" }
+// ]);
 
-const cartTotal = computed(() => cart.value.reduce((sum, item) => sum + item.price, 0));
+const cartTotal = computed(() => 
+  cart.value.reduce((sum, item) => sum + (item.gross_price || 0), 0)
+);
+
 
 // Method to open sidebar for wishlist or cart
 const openSidebar = (type: 'wishlist' | 'cart') => {
