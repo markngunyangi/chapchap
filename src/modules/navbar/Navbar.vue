@@ -18,7 +18,7 @@
       <button 
         @click="openAuthSidebar"
         class="px-4 py-2 rounded-lg bg-transparent border-2 border-white hover:bg-white hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white">
-        Sign up/Login
+        {{ authStore.isLoggedIn ? 'Account' : "Sign up/Login" }}
       </button>
     
       <!-- Wishlist Button -->
@@ -58,17 +58,35 @@
       </h2>
 
    <!-- Auth Sidebar -->
-    <div v-if="sidebarActive === 'auth'">
-      <div class="flex justify-between items-center mb-4 ">
-        <h2 class="text-xl font-bold">Login / Sign Up</h2>
-        <button @click="closeSidebar" class="text-gray-500 hover:text-red-500 text-lg">&times;</button>
-      </div>
-      <AuthSideBar
-        :isSidebarOpen="isSidebarOpen"
-        :activeSidebar="sidebarActive"
-        :closeSidebar="closeSidebar"
-      />
+   <div v-if="sidebarActive === 'auth'">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">
+        {{ authStore.isLoggedIn ? 'Account' : 'Login / Sign Up' }}
+      </h2>
+      <button @click="closeSidebar" class="text-gray-500 hover:text-red-500 text-lg">&times;</button>
     </div>
+
+    <div v-if="authStore.isLoggedIn" class="mt-6 p-4 text-center">
+      <p class="text-gray-800 text-lg font-semibold mb-4">
+        You are logged in!
+      </p>
+      <button
+        @click="authStore.logout"
+        class="w-full bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition duration-200"
+      >
+        Log out
+      </button>
+    </div>
+    
+
+    <AuthSideBar
+      v-else
+      :isSidebarOpen="isSidebarOpen"
+      :activeSidebar="sidebarActive"
+      :closeSidebar="closeSidebar"
+    />
+  </div>
+  
 
 
       <!-- Wishlist Content -->
@@ -93,7 +111,6 @@
             v-if="sidebarActive === 'wishlist'"
             :wishlist="wishlist"
             :closeSidebar="closeSidebar"
-             @remove="handleRemove"
           />
 
         </ul>
@@ -142,7 +159,9 @@ import Cart from "../cart/Cart.vue";
 
 import { useWishlistStore } from '../wishlist/WishlistStore';
 import { useCartStore } from '../cart/CartStore';
+import { useAuthStore } from '../auth/AuthStore';
 
+const authStore = useAuthStore();
   const wishlistStore = useWishlistStore();  // Access the store
   const cartStore = useCartStore();  // Access the store
   
