@@ -1,183 +1,116 @@
 <template>
-  <div>
-    <Navbar :wishlist="wishlistStore.items" @toggle-wishlist="openWishlistSidebar" />
+  <div class="flex h-screen bg-gray-100 font-sans">
+    <aside class="w-52 bg-gray-800 text-white flex flex-col p-8">
+      <div class="text-xl font-bold mb-8">🏋️ ACTIVATE</div>
+      <nav class="space-y-4">
+        <a href="#" class="text-red-500 font-bold block">Dashboard</a>
+        <a href="#" class="text-gray-400 block">Workouts</a>
+        <a href="#" class="text-gray-400 block">Analytics</a>
+        <a href="#" class="text-gray-400 block">Settings</a>
+      </nav>
+    </aside>
 
-    <Banner />
-    <!-- <CategoryTabs /> -->
-    <CategorySelector />
+    <main class="flex-1 p-8 overflow-y-auto">
+      <section class="mb-6">
+        <h1 class="text-2xl font-semibold">Hello Moha</h1>
+      </section>
 
-    <div class="p-6 md:p-10 space-y-16 bg-gray-50">
-
-      <!-- Featured Products Section -->
-      <div class="flex items-start gap-6">
-        <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-3">
-          <h2 class="text-2xl font-extrabold text-sky-700 flex items-center gap-2">
-            🌟 Featured Products
-          </h2>
-          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="../../assets/shirts.jpg"
-              alt="Featured"
-              class="w-full object-contain transition-transform hover:scale-105 duration-300"
-            />
+      <section class="flex flex-wrap gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[200px]">
+          Total workouts <strong class="block text-xl">12</strong><span class="text-sm text-gray-500">workouts</span>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[200px]">
+          Calories burned <strong class="block text-xl">859</strong><span class="text-sm text-gray-500">kcal</span>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[200px]">
+          Total Hours <strong class="block text-xl">320</strong><span class="text-sm text-gray-500">hours</span>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 flex-1 min-w-[200px]">
+          Current Streak <strong class="block text-xl">14</strong><span class="text-sm text-gray-500">days</span>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 w-full">
+          <p class="mb-2">Days Active</p>
+          <div class="grid grid-cols-[repeat(30,10px)] gap-[2px] mt-2">
+            <div
+              v-for="day in 100"
+              :key="day"
+              :class="['w-[10px] h-[10px] rounded-sm', day <= 30 ? 'bg-red-500' : 'bg-gray-300']"
+            ></div>
           </div>
         </div>
+      </section>
 
-        <!-- 3/4: Product Cards -->
-        <div class="w-3/4">
-          <div v-if="featuredProducts.length === 0" class="text-center py-6 text-red-500">
-            No featured products available.
-          </div>
-          <div v-else class="overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <div class="flex gap-6">
-              <div
-                v-for="product in featuredProducts.slice(0, 5)"
-                :key="product.id"
-                class="relative w-full p-4 bg-white shadow-lg rounded-xl"
-              >
-                <ProductCard
-                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://chapchap.marshsoft.org/uploads/shirt.jpeg'"
-                  :title="product.name"
-                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-                  buttonText="View Product"
-                  @view="viewProduct(product)"
-                  @wishlist="addToWishlist(product)"
-                />
-                <button
-                  @click="addToWishlist(product)"
-                  class="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:text-red-500 text-gray-500 transition-colors"
-                >
-                  <i class="fas fa-heart"></i>
-                </button>
+      <section class="flex gap-8">
+        <div class="bg-white rounded-lg shadow p-4 flex-1">
+          <h2 class="text-lg font-semibold mb-4">Recent Activities</h2>
+          <ul class="space-y-4">
+            <li
+              v-for="day in recentDays"
+              :key="day.id"
+              class="flex justify-between border-b pb-2 border-gray-200"
+            >
+              <div>
+                <strong>Day {{ day.day }}</strong>
+                <span class="block text-sm text-red-500">{{ day.calories }}kcal</span>
               </div>
+              <div class="text-right">
+                <small class="block text-gray-500">{{ day.workout }}</small>
+                <span class="block text-sm">{{ day.duration }} minutes</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex-1 space-y-8">
+          <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="text-lg font-semibold mb-4">Personal Growth</h3>
+            <div class="space-y-2">
+              <div class="h-[200px] bg-red-500"></div>
+              <div class="h-[100px] bg-gray-300"></div>
+              <div class="h-[100px] bg-gray-300"></div>
+              <div class="h-[100px] bg-gray-300"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="text-lg font-semibold mb-4">Workout Ratio</h3>
+            <div class="flex justify-around mb-4">
+              <div class="w-20 h-20 rounded-full bg-red-500 text-white flex items-center justify-center text-center text-xs">
+                Cardio<br />12%
+              </div>
+              <div class="w-20 h-20 rounded-full bg-gray-700 text-white flex items-center justify-center text-center text-xs">
+                Strength<br />88%
+              </div>
+            </div>
+            <div>
+              <h3 class="font-medium">Completion By Workout</h3>
+              <p>Strength 88%</p>
+              <div class="h-2 bg-red-500 mb-2 w-[88%]"></div>
+              <p>Cardio 12%</p>
+              <div class="h-2 bg-gray-400 w-[12%]"></div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Best Selling Section -->
-      <div class="flex items-start gap-6">
-        <!-- 1/4: Heading with Image -->
-        <div class="w-1/4 flex flex-col items-start gap-3">
-          <h2 class="text-2xl font-extrabold text-orange-600 flex items-center gap-2">
-            🔥 Best Selling
-          </h2>
-          <div class="w-full bg-white shadow-md rounded-xl overflow-hidden">
-            <img
-              src="../../assets/couch.jpeg"
-              alt="Best Selling"
-              class="w-full object-contain transition-transform hover:scale-105 duration-300"
-            />
-          </div>
-        </div>
-
-        <!-- 3/4: Product Cards -->
-        <div class="w-3/4">
-          <div v-if="bestSellingProducts.length === 0" class="text-center py-6 text-red-500">
-            No bestselling products available.
-          </div>
-          <div v-else class="overflow-x-auto whitespace-nowrap scrollbar-hide">
-            <div class="flex gap-6">
-              <div
-                v-for="product in bestSellingProducts.slice(0, 5)"
-                :key="product.id"
-                class="relative w-full p-4 bg-white shadow-lg rounded-xl "
-              >
-                <ProductCard
-                  :image="product.images?.[0]?.url ? 'https://chapchap.marshsoft.org' + product.images[0].url : 'https://via.placeholder.com/151'"
-                  :title="product.name"
-                  :price="product.net_price ? product.net_price.toFixed(2) : 'N/A'"
-                  buttonText="View Product"
-                  @view="viewProduct(product)"
-                  @wishlist="addToWishlist(product)"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
+      </section>
+    </main>
   </div>
 </template>
-
 <script setup lang="ts">
-  import Navbar from '../navbar/Navbar.vue';
-  import Banner from '../banner/Banner.vue';
-  import CategoryTabs from '../categorytabs/CategoryTabs.vue';
-  import ProductCard from '../products/ProductCard.vue';
-  import CategorySelector from '../categoryselector/CategorySelector.vue';
-  import { computed, ref, onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+import { ref } from 'vue'
 
-  import useProductService from './HomeViewService';
-  import type { Product, ProductCategory } from './HomeViewTypes';
-  import ProductDetails from '../products/ProductDetails.vue';
-  import { useWishlistStore } from '../wishlist/WishlistStore';  // Import Pinia store for wishlist
+type RecentDay = {
+  id: number
+  day: number
+  calories: number
+  workout: string
+  duration: number
+}
 
-  const selectedProduct = ref<Product | null>(null);
-  const router = useRouter();
-
-  // Access the wishlist store
-  const wishlistStore = useWishlistStore();
-
-  // View the selected product
-  function viewProduct(product: Product) {
-    // Navigate to the product details page
-    console.log(product.id)
-    router.push({ path: `/product/${product.id}` });
-  }
-
-  // Close product details modal
-  function closeProductDetails() {
-    selectedProduct.value = null;
-  }
-
-  function handleCheckout(product: Product) {
-    // Handle checkout functionality
-    alert(`Proceeding to checkout for ${product.name}`);
-  }
-
-  const activeCategory = ref<string>(''); // Initialize with an empty string
-
-  const { fetchProducts } = useProductService();
-
-  const {
-    data: storeData,
-    isSuccess: storeDataIsSuccess,
-    isPending: storeDataIsPending,
-    mutate: fetchProductMutate
-  } = fetchProducts();
-
-  const storeList = ref<Product[]>([]);
-
-  const fetchProduct = () => {
-    fetchProductMutate(undefined, {
-      onSuccess: (data) => {
-        storeList.value = data;
-        console.log('Fetched Store Data:', storeList.value);
-      },
-      onError: (error) => {
-        console.error('Error fetching stores:', error);
-      }
-    });
-  };
-
-  onMounted(fetchProduct);
-
-  // Filter featured products
-  const featuredProducts = computed(() => {
-    return storeList.value.filter(product => product.is_featured);
-  });
-
-  // Filter bestselling products based on quantity (or sales logic)
-  const bestSellingProducts = computed(() => {
-    return storeList.value.sort((a, b) => b.quantity - a.quantity); // Example using quantity
-  });
-
-  // Add product to the wishlist using Pinia store
-  const addToWishlist = (product: Product) => {
-    wishlistStore.addToWishlist(product);  // Add product to the wishlist store
-  };
+const recentDays = ref<RecentDay[]>([
+  { id: 1, day: 19, calories: 95, workout: 'Full Body Workout', duration: 15 },
+  { id: 2, day: 18, calories: 80, workout: 'Arms Workout', duration: 12 },
+  { id: 3, day: 17, calories: 105, workout: 'Legs Workout', duration: 25 },
+  { id: 4, day: 16, calories: 105, workout: 'Legs Workout', duration: 25 },
+])
 </script>
+
